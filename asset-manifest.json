@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/pomodor-amigo-react/static/css/main.8c8b27cf.chunk.css",
+    "main.js": "/pomodor-amigo-react/static/js/main.e27b0e01.chunk.js",
+    "main.js.map": "/pomodor-amigo-react/static/js/main.e27b0e01.chunk.js.map",
+    "runtime-main.js": "/pomodor-amigo-react/static/js/runtime-main.2853cd4e.js",
+    "runtime-main.js.map": "/pomodor-amigo-react/static/js/runtime-main.2853cd4e.js.map",
+    "static/js/2.ebb0debb.chunk.js": "/pomodor-amigo-react/static/js/2.ebb0debb.chunk.js",
+    "static/js/2.ebb0debb.chunk.js.map": "/pomodor-amigo-react/static/js/2.ebb0debb.chunk.js.map",
+    "static/js/3.59b21799.chunk.js": "/pomodor-amigo-react/static/js/3.59b21799.chunk.js",
+    "static/js/3.59b21799.chunk.js.map": "/pomodor-amigo-react/static/js/3.59b21799.chunk.js.map",
+    "index.html": "/pomodor-amigo-react/index.html",
+    "static/css/main.8c8b27cf.chunk.css.map": "/pomodor-amigo-react/static/css/main.8c8b27cf.chunk.css.map",
+    "static/js/2.ebb0debb.chunk.js.LICENSE.txt": "/pomodor-amigo-react/static/js/2.ebb0debb.chunk.js.LICENSE.txt",
+    "static/media/logo.6ce24c58.svg": "/pomodor-amigo-react/static/media/logo.6ce24c58.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.2853cd4e.js",
+    "static/js/2.ebb0debb.chunk.js",
+    "static/css/main.8c8b27cf.chunk.css",
+    "static/js/main.e27b0e01.chunk.js"
+  ]
+}
