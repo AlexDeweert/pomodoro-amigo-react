@@ -20,10 +20,10 @@ export default function LoginScreen(props) {
     function handleRegister(e) {
         Auth.register((result) => {
             if(result) {
-                console.log('Registration successful')
                 props.history.push('/home')
             }
             else {
+                //TODO: add a toast here
                 console.log('Registration failure')
             }
             

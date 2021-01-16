@@ -22,8 +22,12 @@ class Home extends React.Component {
     render() {
         return(
             <div>
-                <h1>PomodoroAmigo</h1>
-                <h2>Home</h2>
+                <h1>Interval Schema Name</h1>
+                <h2>Intervals</h2>
+                <button>Start</button> <button>Pause</button>
+                <h2>[REPEAT CHECKBOX]</h2>
+                <button>Save to Collection</button>
+                <button>Edit</button>
                 <button onClick={this.handleLogout}>Logout</button>
             </div>
         )
