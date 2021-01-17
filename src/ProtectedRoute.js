@@ -10,7 +10,6 @@ export default function ProtectedRoute({children, ...rest}) {
         <Route 
         {...rest} 
         render={
-            // ({ location }) => Auth.isAuthenticated() ? (children) : ( <Redirect to={{ pathname: '/auth', state: { from: location }}}/>)
             ({ location }) => {
                 if(Auth.isAuthenticated()) {
                     return (children)

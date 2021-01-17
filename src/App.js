@@ -27,6 +27,7 @@ function App() {
                 transition={Slide}
                 pauseOnFocusLoss
                 pauseOnHover
+                limit={3}
             />
         </Router>
     );

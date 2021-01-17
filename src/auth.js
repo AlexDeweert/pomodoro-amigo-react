@@ -21,27 +21,31 @@ class Auth {
     }
 
     registerOrLogin = (callback, endpoint, emailRef, passwordRef, setApiToken) => {
-        const config = { headers: {'Content-Type':'application/x-www-form-urlencoded'} }
-        const params = new URLSearchParams()
-        params.append('email',emailRef.current.value)
-        params.append('password',passwordRef.current.value)
-        const connString = process.env.REACT_APP_DB_STRING.concat('/',endpoint)
-        axios.post(connString, params, config)
-        .then((result)=> {
-            if(result.status === 200) {
-                setApiToken(result.data['token'])
-                this.authenticated = true;
-                callback(true, result.data['message'], 'auth-success-toast-id')
-            }
-        })
-        .catch((error)=> {
-            this.authenticated = false
-            callback(false, error.response.data['message'])
-            // if(endpoint === 'login') callback(false, error.response.data['message'], 'server-error-login-toast-id')
-            // else callback(false, error.response.data['message'], 'server-error-register-toast-id')
-        })
-        emailRef.current.value = null
-        passwordRef.current.value = null
+        let email = emailRef.current.value
+        if(this.isValidEmailAddress(email)) {
+            const config = { headers: {'Content-Type':'application/x-www-form-urlencoded'} }
+            const params = new URLSearchParams()
+            params.append('email',emailRef.current.value)
+            params.append('password',passwordRef.current.value)
+            const connString = process.env.REACT_APP_DB_STRING.concat('/',endpoint)
+            axios.post(connString, params, config)
+            .then((result)=> {
+                if(result.status === 200) {
+                    setApiToken(result.data['token'])
+                    this.authenticated = true;
+                    callback(true, result.data['message'], 'auth-success-toast-id')
+                }
+            })
+            .catch((error)=> {
+                this.authenticated = false
+                callback(false, error.response.data['message'])
+            })
+            emailRef.current.value = null
+            passwordRef.current.value = null
+        }
+        else {
+            callback(false, 'Invalid e-mail address.')
+        }
     }
 
     login = (callback, emailRef, passwordRef, setApiToken) => {
@@ -50,6 +54,32 @@ class Auth {
     
     register = (callback, emailRef, passwordRef, setApiToken) => {
         this.registerOrLogin(callback, 'register', emailRef, passwordRef, setApiToken)
+    }
+
+    isValidEmailAddress(address) {
+        try {
+            if(address.includes('@') && address.includes('.')) {
+                let atSplit = address.split('@')
+                let prefix = atSplit[0] //can be anything
+                let suffix = atSplit[1] //must include period
+                if(prefix.length && suffix.length && suffix.includes('.')) {
+                    let dotSplit = suffix.split('.')
+                    //want indices 1 and 0 to contain at least 1 character each.
+                    if(dotSplit[0].length && dotSplit[1].length) {
+                        return true
+                    }
+                    return false
+                }
+                return false
+            }
+            else {
+                return false
+            }
+        }
+        catch(error) {
+            console.log('E-mail validation error: ', error)
+            return false
+        }
     }
 
     isAuthenticated = () => {
