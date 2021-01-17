@@ -13,38 +13,43 @@ class Auth {
         }
         console.log(this.authenticated)
     }
-    login = (callback) => {this.authenticated = true; callback()}
-    
+
     logout = (callback) => {
         this.authenticated = false;
         localStorage.removeItem('apiToken')
-        callback(true)
+        callback(true, 'Successfully logged out', 'logout-toast-id')
     }
-    
-    register = (callback, emailRef, passwordRef, setApiToken) => {
+
+    registerOrLogin = (callback, endpoint, emailRef, passwordRef, setApiToken) => {
         const config = { headers: {'Content-Type':'application/x-www-form-urlencoded'} }
         const params = new URLSearchParams()
         params.append('email',emailRef.current.value)
         params.append('password',passwordRef.current.value)
-        const connString = process.env.REACT_APP_DB_STRING.concat('/register')
+        const connString = process.env.REACT_APP_DB_STRING.concat('/',endpoint)
         axios.post(connString, params, config)
         .then((result)=> {
-            if(result.data['success']) {
+            if(result.status === 200) {
                 setApiToken(result.data['token'])
                 this.authenticated = true;
-                callback(true)
-            }
-            else {
-                callback(false)
+                callback(true, result.data['message'], 'auth-success-toast-id')
             }
         })
-        .catch((err)=> {
+        .catch((error)=> {
             this.authenticated = false
-            callback(false)
-            console.log('error on registration => ', err)
+            callback(false, error.response.data['message'])
+            // if(endpoint === 'login') callback(false, error.response.data['message'], 'server-error-login-toast-id')
+            // else callback(false, error.response.data['message'], 'server-error-register-toast-id')
         })
         emailRef.current.value = null
         passwordRef.current.value = null
+    }
+
+    login = (callback, emailRef, passwordRef, setApiToken) => {
+        this.registerOrLogin(callback, 'login', emailRef, passwordRef, setApiToken)
+    }
+    
+    register = (callback, emailRef, passwordRef, setApiToken) => {
+        this.registerOrLogin(callback, 'register', emailRef, passwordRef, setApiToken)
     }
 
     isAuthenticated = () => {

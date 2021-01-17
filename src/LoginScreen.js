@@ -1,34 +1,35 @@
 import React, {useRef, useState, useEffect} from 'react'
 import Auth from './auth'
+import {toast} from 'react-toastify'
 
 export default function LoginScreen(props) {
     const emailRef = useRef()
     const passwordRef = useRef()
-    const [apiToken, setApiToken] = useState( JSON.parse(localStorage.getItem('apiToken')) )
+    const [apiToken, setApiToken] = useState( JSON.parse(localStorage.getItem('apiToken')) || null)
     
     //Similar to componentDidMount and componentDidUpdate
     useEffect(() => {
         localStorage.setItem('apiToken', JSON.stringify(apiToken))
     }, [apiToken])
 
-    function handleLogin(e) {
-        Auth.login(()=> {
-            console.log('this is the login callback')
-        })
+    function loginOrRegisterCallback(result, toastMessage, toastId) {
+        if(result) {
+            props.history.push('/home')
+            toast.success(toastMessage, {toastId: toastId})
+        }
+        else {
+            toast.error(toastMessage)
+        }   
     }
 
-    function handleRegister(e) {
-        Auth.register((result) => {
-            if(result) {
-                props.history.push('/home')
-            }
-            else {
-                //TODO: add a toast here
-                console.log('Registration failure')
-            }
-            
-        }, emailRef, passwordRef, setApiToken)
+    function handleLogin() {
+        Auth.login(loginOrRegisterCallback, emailRef, passwordRef, setApiToken)
     }
+
+    function handleRegister() {
+        Auth.register(loginOrRegisterCallback, emailRef, passwordRef, setApiToken)
+    }
+    
     return (
         <div>
             <h1>Auth</h1>
@@ -45,7 +46,7 @@ export default function LoginScreen(props) {
             <button label='submit' onClick={ handleLogin }>Login</button>
             <button label='submit' onClick={ handleRegister }>Register</button>
             <br/>
-            <h3>apiToken: {apiToken}</h3>
+            <h3>apiToken: {apiToken || 'null'}</h3>
         </div>
     )
 }

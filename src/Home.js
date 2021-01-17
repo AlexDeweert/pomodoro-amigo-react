@@ -1,20 +1,22 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
 import Auth from './auth'
+import {toast} from 'react-toastify'
 
 //Had to use withRouter because the ProtectedRoute doesn't
 //pass props down or something
 class Home extends React.Component {
+
     constructor(props) {
         super(props)
         this.handleLogout = this.handleLogout.bind(this)
     }
 
     handleLogout() {
-        Auth.logout((success)=> {
+        Auth.logout((success, toastMessage, toastId)=> {
             if(success) {
-                console.log('successfully logged out')
-                this.props.history.push('/auth')
+                this.props.history.push('/')
+                toast.success(toastMessage, {toastId: toastId})
             }
         })
     }
