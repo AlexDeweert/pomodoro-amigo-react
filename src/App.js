@@ -7,6 +7,7 @@ import Navigation from './Navigation'
 import Landing from './Landing'
 import {Slide,ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import TimerCollection from './TimerCollection'
 
 function App() {
     return (
@@ -15,6 +16,7 @@ function App() {
             <Switch>
                 <Route path='/auth' component={LoginScreen}/>
                 <ProtectedRoute path='/home'><Home/></ProtectedRoute>
+                <Route path='/collection'><TimerCollection/></Route>
                 <Route path='/' component={Landing}/>
             </Switch>
             <ToastContainer

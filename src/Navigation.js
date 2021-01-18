@@ -20,7 +20,8 @@ export default function Navigation() {
         <div className='nav'>
             <ul>
             <li><Link exact='true' to='/'>PomodoroAmigo</Link></li>
-                <li><Link to='/home'>Timers</Link></li>
+                <li><Link to='/home'>Home</Link></li>
+                <li><Link to='/collection'>Collection</Link></li>
                 {Auth.isAuthenticated() && <li><Link to='/' onClick={handleLogout}>Logout</Link></li>}
             </ul>
         </div>
