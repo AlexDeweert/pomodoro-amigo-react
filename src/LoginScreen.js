@@ -1,12 +1,14 @@
-import React, {useRef, useState, useEffect} from 'react'
+import React, {useRef, useState, useEffect, useContext} from 'react'
 import Auth from './auth'
 import {toast} from 'react-toastify'
+import {UserContext} from './UserContext'
 
 export default function LoginScreen(props) {
+    const message = useContext(UserContext)
     const emailRef = useRef()
     const passwordRef = useRef()
     const [apiToken, setApiToken] = useState( JSON.parse(localStorage.getItem('apiToken')) || null)
-    
+
     //Similar to componentDidMount and componentDidUpdate
     useEffect(() => {
         localStorage.setItem('apiToken', JSON.stringify(apiToken))
@@ -32,6 +34,7 @@ export default function LoginScreen(props) {
     
     return (
         <div>
+            <h1>{message}</h1>
             <h1>Auth</h1>
             <label>
                 E-mail address

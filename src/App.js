@@ -8,17 +8,20 @@ import Landing from './Landing'
 import {Slide,ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import TimerCollection from './TimerCollection'
+import {UserContext} from './UserContext'
 
 function App() {
     return (
         <Router>
             <Navigation />
-            <Switch>
-                <Route path='/auth' component={LoginScreen}/>
-                <ProtectedRoute path='/home'><Home/></ProtectedRoute>
-                <Route path='/collection'><TimerCollection/></Route>
-                <Route path='/' component={Landing}/>
-            </Switch>
+            <UserContext.Provider value="hello Context">
+                <Switch>
+                        <Route path='/auth' component={LoginScreen}/>
+                        <ProtectedRoute path='/home'><Home/></ProtectedRoute>
+                        <ProtectedRoute path='/collection'><TimerCollection/></ProtectedRoute>
+                        <Route path='/' component={Landing}/>
+                </Switch>
+            </UserContext.Provider>
             <ToastContainer
                 position="bottom-center"
                 autoClose={5000}
