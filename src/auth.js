@@ -20,7 +20,7 @@ class Auth {
         callback(true, 'Successfully logged out', 'logout-toast-id')
     }
 
-    registerOrLogin = (callback, endpoint, emailRef, passwordRef, setApiToken) => {
+    registerOrLogin = (callback, endpoint, emailRef, passwordRef) => {
         let email = emailRef.current.value
         if(this.isValidEmailAddress(email)) {
             const config = { headers: {'Content-Type':'application/x-www-form-urlencoded'} }
@@ -31,9 +31,9 @@ class Auth {
             axios.post(connString, params, config)
             .then((result)=> {
                 if(result.status === 200) {
-                    setApiToken(result.data['token'])
+                    // setApiToken(result.data['token'])
                     this.authenticated = true;
-                    callback(true, result.data['message'], 'auth-success-toast-id')
+                    callback(true, result.data['message'], 'auth-success-toast-id', email, result.data['token'])
                 }
             })
             .catch((error)=> {

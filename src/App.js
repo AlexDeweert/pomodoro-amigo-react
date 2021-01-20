@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import LoginScreen from './LoginScreen'
 import Home from './Home'
 import ProtectedRoute from './ProtectedRoute'
@@ -11,10 +11,17 @@ import TimerCollection from './TimerCollection'
 import {UserContext} from './UserContext'
 
 function App() {
+
+    let defaultUser = {
+        'email':null,
+        'api_token':null
+    }
+    // const [user, setUser] = useState(defaultUser)
+
     return (
         <Router>
-            <Navigation />
-            <UserContext.Provider value="hello Context">
+            <UserContext.Provider value={useState(defaultUser)}>
+                <Navigation />
                 <Switch>
                         <Route path='/auth' component={LoginScreen}/>
                         <ProtectedRoute path='/home'><Home/></ProtectedRoute>
