@@ -1,12 +1,13 @@
 import React, {useRef, useContext} from 'react'
 import Auth from './auth'
 import {toast} from 'react-toastify'
-import {UserContext} from './UserContext'
+import {UserContext} from './User/UserContext'
+// import User from './user'
 
 export default function LoginScreen(props) {
     // let user = useContext(UserContext).user
     // let setUser = useContext(UserContext).setUser
-    let [user, setUser] = useContext(UserContext)
+    let [user] = useContext(UserContext)
 
     const emailRef = useRef()
     const passwordRef = useRef()
@@ -21,17 +22,12 @@ export default function LoginScreen(props) {
         if(result) {
             props.history.push('/home')
             toast.success(toastMessage, {toastId: toastId})
-            setUser({
-                'email':email,
-                'api_token':api_token
-            })
+            //setUser( new User(email, api_token) )
+            user.setEmail(email)
+            user.setApiToken(api_token)
         }
         else {
             toast.error(toastMessage)
-            setUser({
-                'email':null,
-                'api_token':null
-            })
         }   
     }
 
@@ -59,8 +55,8 @@ export default function LoginScreen(props) {
             <button label='submit' onClick={ handleLogin }>Login</button>
             <button label='submit' onClick={ handleRegister }>Register</button>
             <br/>
-            <h3>users email: {user['email'] || 'null'}</h3>
-            <h3>users apiToken: {user['api_token'] || 'null'}</h3>
+            <h3>users email: {user.getEmail() || 'null'}</h3>
+            <h3>users apiToken: {user.getApiToken() || 'null'}</h3>
         </div>
     )
 }

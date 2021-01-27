@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {Route, Redirect} from 'react-router-dom';
 import Auth from './auth'
 import {toast} from 'react-toastify'
@@ -22,4 +22,4 @@ export default function ProtectedRoute({children, ...rest}) {
         }
         />
     )
-}
+};

@@ -7,20 +7,14 @@ import Navigation from './Navigation'
 import Landing from './Landing'
 import {Slide,ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-import TimerCollection from './TimerCollection'
-import {UserContext} from './UserContext'
+import TimerCollection from './Timers/TimerCollection'
+import {UserContext} from './User/UserContext'
+import User from './User/user'
 
 function App() {
-
-    let defaultUser = {
-        'email':null,
-        'api_token':null
-    }
-    // const [user, setUser] = useState(defaultUser)
-
     return (
         <Router>
-            <UserContext.Provider value={useState(defaultUser)}>
+            <UserContext.Provider value={useState(new User())}>
                 <Navigation />
                 <Switch>
                         <Route path='/auth' component={LoginScreen}/>

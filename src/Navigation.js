@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom'
 import Auth from './auth'
 import {useLocation} from 'react-router-dom'
 import {toast} from 'react-toastify'
-import {UserContext} from './UserContext'
+import {UserContext} from './User/UserContext'
 
 export default function Navigation() {
     
@@ -25,9 +25,10 @@ export default function Navigation() {
     return (
         <div className='nav'>
             <ul>
-            <li><Link exact='true' to='/'>PomodoroAmigo</Link></li>
+                <li><Link exact='true' to='/'>PomodoroAmigo</Link></li>
                 <li><Link to='/home'>Home</Link></li>
                 <li><Link to='/collection'>Collection</Link></li>
+                <li><Link to='/auth'>Auth</Link></li>
                 {Auth.isAuthenticated() && <li><Link to='/' onClick={handleLogout}>Logout</Link></li>}
             </ul>
         </div>
