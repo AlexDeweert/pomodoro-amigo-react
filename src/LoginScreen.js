@@ -18,13 +18,13 @@ export default function LoginScreen(props) {
     //     localStorage.setItem('apiToken', JSON.stringify(apiToken))
     // }, [apiToken])
 
-    function loginOrRegisterCallback(result, toastMessage, toastId, email, api_token) {
+    function loginOrRegisterCallback(result, toastMessage, toastId, email, api_token, user_id) {
         if(result) {
             props.history.push('/home')
             toast.success(toastMessage, {toastId: toastId})
-            //setUser( new User(email, api_token) )
             user.setEmail(email)
             user.setApiToken(api_token)
+            user.setUserId(user_id)
         }
         else {
             toast.error(toastMessage)

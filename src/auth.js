@@ -33,7 +33,7 @@ class Auth {
                 if(result.status === 200) {
                     // setApiToken(result.data['token'])
                     this.authenticated = true;
-                    callback(true, result.data['message'], 'auth-success-toast-id', email, result.data['token'])
+                    callback(true, result.data['message'], 'auth-success-toast-id', email, result.data['token'], result.data['user_id'])
                 }
             })
             .catch((error)=> {
@@ -46,6 +46,25 @@ class Auth {
         else {
             callback(false, 'Invalid e-mail address.')
         }
+    }
+
+    //TODO: Make this take an auth_token so we can have middleware auth checking on the backend
+    addNewTimer = (callback, user_id, description) => {
+        const config = { headers: {'Content-Type':'application/x-www-form-urlencoded'} }
+        const params = new URLSearchParams()
+        params.append('user_id', user_id)
+        params.append('description', description)
+        const connString = process.env.REACT_APP_DB_STRING.concat('/timers/add')
+        axios.post(connString, params, config)
+        .then((result)=>{
+            if(result.status === 200) {
+                console.log('Successful post of timer')
+                callback(true, result.data['timer_id'])
+            }
+        })
+        .catch((error)=>{
+            callback(false, error.response.data['message'])
+        })
     }
 
     login = (callback, emailRef, passwordRef, setApiToken) => {
