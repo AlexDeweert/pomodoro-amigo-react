@@ -58,11 +58,12 @@ class Auth {
         axios.post(connString, params, config)
         .then((result)=>{
             if(result.status === 200) {
-                console.log('Successful post of timer')
+                console.log('Successful post of timer with id: %s',JSON.stringify(result.data))
                 callback(true, result.data['timer_id'])
             }
         })
         .catch((error)=>{
+            console.log(error)
             callback(false, error.response.data['message'])
         })
     }

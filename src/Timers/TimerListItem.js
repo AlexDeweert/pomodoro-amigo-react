@@ -1,10 +1,9 @@
 import React from 'react'
 
 export default function TimerListItem(props) {
-
     return (
         <div>
-            Timer list item {props.description}
+            desc: {props.description}, user_id: {props.user_id}, timer_id: {props.timer_id || "null timer id"}
         </div>
     )
 }
