@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {Route, Redirect} from 'react-router-dom';
 import Auth from './auth'
-import {toast} from 'react-toastify'
-// import {uuid} from 'uuidv4'
+// import {toast} from 'react-toastify'
 
 //Example from https://reactrouter.com/web/example/auth-workflow
 export default function ProtectedRoute({children, ...rest}) {
@@ -15,7 +14,6 @@ export default function ProtectedRoute({children, ...rest}) {
                     return (children)
                 }
                 else {
-                    toast.info('Please log in or sign up to continue', {toastId: 'please-login-toast-id'})
                     return (<Redirect to={{ pathname: '/auth', state: { from: location }}}/>)
                 }
             }

@@ -7,7 +7,7 @@ export default class User {
     }
     getEmail = () => this.email
     setEmail = (email) => this.email = email
-    getApiToken = () => this.api_token
+    getApiToken = () => this.api_token //TODO: not really needed, but leave for now
     setApiToken = (api_token) => this.api_token = api_token
     getUserId = () => this.user_id
     setUserId = (user_id) => this.user_id = user_id

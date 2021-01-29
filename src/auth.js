@@ -2,16 +2,17 @@ import axios from 'axios'
 
 class Auth {
     constructor() {
-        var apiToken = JSON.parse(localStorage.getItem('apiToken'));
-        if(apiToken !== null) {
-            console.log('apiToken is NOT null, setting authenticated to true')
-            this.authenticated = true
-        }
-        else {
-            console.log('apiToken IS NULL, setting this.authenticated to false')
-            this.authenticated = false
-        }
-        console.log(this.authenticated)
+        // var apiToken = JSON.parse(localStorage.getItem('apiToken'));
+        // if(apiToken !== null) {
+        //     console.log('apiToken is NOT null, setting authenticated to true')
+        //     this.authenticated = true
+        // }
+        // else {
+        //     console.log('apiToken IS NULL, setting this.authenticated to false')
+        //     this.authenticated = false
+        // }
+        // console.log(this.authenticated)
+        this.authenticated = false
     }
 
     logout = (callback) => {
@@ -37,6 +38,7 @@ class Auth {
                 }
             })
             .catch((error)=> {
+                console.log(error)
                 this.authenticated = false
                 callback(false, error.response.data['message'])
             })
@@ -46,6 +48,24 @@ class Auth {
         else {
             callback(false, 'Invalid e-mail address.')
         }
+    }
+
+    loginWithToken = (callback, apiToken) => {
+        const config = {headers: {'Content-Type':'application/x-www-form-urlencoded'}}
+        const params = new URLSearchParams()
+        params.append('api_token', apiToken)
+        const connString = process.env.REACT_APP_DB_STRING.concat('/login')
+        axios.post(connString, params, config)
+        .then((result)=>{
+            if(result.status === 200) {
+                this.authenticated = true;
+                callback(true, result.data['message'], 'auth-success-toast-id', 'needEmailFromThisEndpoint', result.data['token'], result.data['user_id'])
+            }
+        })
+        .catch((error)=>{
+            this.authenticated = false
+            callback(false, error.response.data['message'])
+        })
     }
 
     //TODO: Make this take an auth_token so we can have middleware auth checking on the backend

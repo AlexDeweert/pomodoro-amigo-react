@@ -8,16 +8,15 @@ import {UserContext} from './User/UserContext'
 export default function Navigation() {
     
     useLocation()
-    let [, setUser] = useContext(UserContext)
+    let [user] = useContext(UserContext)
     
     function handleLogout() {
         Auth.logout((success, toastMessage, toastId)=>{
             if(success) {
                 toast.info(toastMessage, {toastId: toastId})
-                setUser({
-                    'email':null,
-                    'api_token':null
-                })
+                user.setEmail(null)
+                user.setApiToken(null)
+                user.setUserId(null)
             }
         })
     }
