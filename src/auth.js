@@ -68,26 +68,6 @@ class Auth {
         })
     }
 
-    //TODO: Make this take an auth_token so we can have middleware auth checking on the backend
-    addNewTimer = (callback, user_id, description) => {
-        const config = { headers: {'Content-Type':'application/x-www-form-urlencoded'} }
-        const params = new URLSearchParams()
-        params.append('user_id', user_id)
-        params.append('description', description)
-        const connString = process.env.REACT_APP_DB_STRING.concat('/timers/add')
-        axios.post(connString, params, config)
-        .then((result)=>{
-            if(result.status === 200) {
-                console.log('Successful post of timer with id: %s',JSON.stringify(result.data))
-                callback(true, result.data['timer_id'])
-            }
-        })
-        .catch((error)=>{
-            console.log(error)
-            callback(false, error.response.data['message'])
-        })
-    }
-
     login = (callback, emailRef, passwordRef, setApiToken) => {
         this.registerOrLogin(callback, 'login', emailRef, passwordRef, setApiToken)
     }
@@ -124,6 +104,49 @@ class Auth {
 
     isAuthenticated = () => {
         return this.authenticated
+    }
+
+
+
+    //Timers
+
+    //TODO: Make this take an auth_token so we can have middleware auth checking on the backend
+    addNewTimer = (callback, user_id, timer_id, description) => {
+        const config = { headers: {'Content-Type':'application/x-www-form-urlencoded'} }
+        const params = new URLSearchParams()
+        params.append('user_id', user_id)
+        params.append('description', description)
+        params.append('timer_id', timer_id)
+        const connString = process.env.REACT_APP_DB_STRING.concat('/timers/add')
+        axios.post(connString, params, config)
+        .then((result)=>{
+            if(result.status === 200) {
+                console.log('Successful post of timer with id: %s',JSON.stringify(result.data))
+                callback(true, result.data['timer_id'])
+            }
+        })
+        .catch((error)=>{
+            console.log(error)
+            callback(false, error.response.data['message'])
+        })
+    }
+
+    getTimers = (user_id, callback) => {
+        const connString = process.env.REACT_APP_DB_STRING.concat('/timers/get')
+        const params = {params: {user_id:user_id}}
+        axios.get(connString, params)
+        .then((response)=>{
+            if(response.status === 200) {
+                // console.log(response.data.result[0])
+                // console.log(JSON.stringify(result.data))
+                callback(true, response.data.result) //returns an array
+            }
+        })
+        .catch((error)=>{
+            console.log("error from server")
+            console.log(error)
+            callback(false, null)
+        })
     }
 }
 
