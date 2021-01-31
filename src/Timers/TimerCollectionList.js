@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import {UserContext} from '../User/UserContext'
 import TimerListItem from './TimerListItem'
 import Auth from '../auth'
@@ -12,29 +12,31 @@ export default function TimerCollectionList() {
     //For now, if we want to, we can store them locally - then asynchronously update the remote server
 
     const [user] = useContext(UserContext)
-    const [timers, setTimers] = useState([])
+    // let [timers] = useState(user.getTimers())
     let [editing, setEditing] = useState(false)
     let [newTimerDescription, setNewTimerDescription] = useState(null)
     let descriptionRef = useRef()
 
-    useEffect(()=>{
-        Auth.getTimers(user.getUserId(), (success, timerData)=> {
-            if(success && timerData.length) {
-                let newTimers = []
-                for(let idx in timerData) {
-                    let timer = timerData[idx]
-                    console.log(timer)
-                    let newTimer = {
-                        timer_id: timer.timer_id,
-                        user_id: timer.user_id,
-                        description: timer.description
-                    }
-                    newTimers.push(newTimer)
-                }
-                setTimers(newTimers)
-            }
-        })
-    }, [user])
+    //TODO: Use caching here so we only retrieve the pre-existing timers once
+    //when the component is first loaded.
+    // useEffect(()=>{
+    //     Auth.getTimers(user.getUserId(), (success, timerData)=> {
+    //         if(success && timerData.length) {
+    //             let newTimers = []
+    //             for(let idx in timerData) {
+    //                 let timer = timerData[idx]
+    //                 console.log(timer)
+    //                 let newTimer = {
+    //                     timer_id: timer.timer_id,
+    //                     user_id: timer.user_id,
+    //                     description: timer.description
+    //                 }
+    //                 newTimers.push(newTimer)
+    //             }
+    //             setTimers(newTimers)
+    //         }
+    //     })
+    // }, [user])
 
     function handleNewDescriptionChange(e) {
         setNewTimerDescription(e.target.value)
@@ -56,7 +58,9 @@ export default function TimerCollectionList() {
             user_id: user.getUserId(),
             description: newTimerDescription,
         }
-        setTimers([...timers, newTimer])
+        //setTimers([...timers, newTimer])
+        // user.setTimers([...timers, newTimer])
+        user.getTimers().push(newTimer)
 
         //Here we wait for the assigned timer_id
         Auth.addNewTimer((success,timer_id)=>{
@@ -80,9 +84,12 @@ export default function TimerCollectionList() {
         <div>
             <h2>Timer Collection for {user.getApiToken()}</h2>
             {
-                timers.map((timer)=>{
+                user.getTimers().map((timer)=>{
                     return (<TimerListItem description={timer.description} user_id={timer.user_id} timer_id={timer.timer_id} key={timer.timer_id}/>)
                 })
+                // timers.map((timer)=>{
+                //     return (<TimerListItem description={timer.description} user_id={timer.user_id} timer_id={timer.timer_id} key={timer.timer_id}/>)
+                // })
             }
             {editing && <div><label>Description</label><input type="text" ref={descriptionRef} onChange={handleNewDescriptionChange}></input></div>}
             {editing && <button onClick={handleAddClicked}>Add</button>}

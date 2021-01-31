@@ -1,4 +1,4 @@
-import React, {useEffect,useRef,useContext} from 'react'
+import React, {useEffect,useRef,useContext,useCallback} from 'react'
 import Auth from './auth'
 import {toast} from 'react-toastify'
 import {UserContext} from './User/UserContext'
@@ -24,6 +24,29 @@ export default function LoginScreen(props) {
     //Here we can do something like, on App load, first verify with the server that the
     //existing API token is valid (if there is indeed a token). If it is, proceed as normal
     //otherwise we revoke the current API token and force the user to login.
+
+    let timerListCallback = useCallback(
+        () => {
+            console.log("timerListCallback")
+            Auth.getTimers(user.getUserId(), (success, timerData)=> {
+                if(success && timerData.length) {
+                    let newTimers = []
+                    for(let idx in timerData) {
+                        let timer = timerData[idx]
+                        console.log(timer)
+                        let newTimer = {
+                            timer_id: timer.timer_id,
+                            user_id: timer.user_id,
+                            description: timer.description
+                        }
+                        newTimers.push(newTimer)
+                    }
+                    user.setTimers(newTimers)
+                }
+            })
+        },[user]
+    )
+
     useEffect(()=> {
         console.log("Checking if login is available with stored token...")
         if(!Auth.isAuthenticated()) {
@@ -38,6 +61,8 @@ export default function LoginScreen(props) {
                         user.setEmail(email)
                         user.setApiToken(api_token)//probably not needed
                         user.setUserId(user_id)
+                        //If authorized set the users timers list in user context object
+                        timerListCallback()
                     }
                     else {
                         toast.error(toastMessage)
@@ -52,7 +77,27 @@ export default function LoginScreen(props) {
         else {
             console.log("User is already authenticated (and logged in)")
         }
-    }, [user,props.history])
+    }, [user,props.history,timerListCallback])
+
+
+    // function getUserTimers() {
+    //     Auth.getTimers(user.getUserId(), (success, timerData)=> {
+    //         if(success && timerData.length) {
+    //             let newTimers = []
+    //             for(let idx in timerData) {
+    //                 let timer = timerData[idx]
+    //                 console.log(timer)
+    //                 let newTimer = {
+    //                     timer_id: timer.timer_id,
+    //                     user_id: timer.user_id,
+    //                     description: timer.description
+    //                 }
+    //                 newTimers.push(newTimer)
+    //             }
+    //             user.setTimers(newTimers)
+    //         }
+    //     })
+    // }
 
     function loginOrRegisterCallback(result, toastMessage, toastId, email, api_token, user_id) {
         if(result) {
@@ -62,6 +107,7 @@ export default function LoginScreen(props) {
             user.setEmail(email)
             user.setApiToken(api_token)
             user.setUserId(user_id)
+            timerListCallback()
         }
         else {
             toast.error(toastMessage)
