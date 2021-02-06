@@ -17,6 +17,7 @@ export default function Navigation() {
                 user.setEmail(null)
                 user.setApiToken(null)
                 user.setUserId(null)
+                user.setTimers({})
             }
         })
     }

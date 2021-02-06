@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext, useRef, useState, useEffect } from 'react'
 import {UserContext} from '../User/UserContext'
 import TimerListItem from './TimerListItem'
 import Auth from '../auth'
@@ -6,37 +6,18 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default function TimerCollectionList() {
 
-
-    //When do we need to retrieve the timers list?
-    //On initial app load - ie if the current "savedTimers" state is null, then we can retrieve them in useEffect
-    //For now, if we want to, we can store them locally - then asynchronously update the remote server
-
     const [user] = useContext(UserContext)
-    // let [timers] = useState(user.getTimers())
+    //Load the timerlist once on component load.
+    //after that we edit locally, and async update the list remotely.
+    const [timerDict, setTimerDict] = useState({})
     let [editing, setEditing] = useState(false)
     let [newTimerDescription, setNewTimerDescription] = useState(null)
     let descriptionRef = useRef()
 
-    //TODO: Use caching here so we only retrieve the pre-existing timers once
-    //when the component is first loaded.
-    // useEffect(()=>{
-    //     Auth.getTimers(user.getUserId(), (success, timerData)=> {
-    //         if(success && timerData.length) {
-    //             let newTimers = []
-    //             for(let idx in timerData) {
-    //                 let timer = timerData[idx]
-    //                 console.log(timer)
-    //                 let newTimer = {
-    //                     timer_id: timer.timer_id,
-    //                     user_id: timer.user_id,
-    //                     description: timer.description
-    //                 }
-    //                 newTimers.push(newTimer)
-    //             }
-    //             setTimers(newTimers)
-    //         }
-    //     })
-    // }, [user])
+    useEffect(()=>{
+        console.log("Initial user load")
+        setTimerDict(user.getTimers())
+    }, [user])
 
     function handleNewDescriptionChange(e) {
         setNewTimerDescription(e.target.value)
@@ -50,6 +31,16 @@ export default function TimerCollectionList() {
         }
     }
 
+    //a function passed as a prop to each timer list item instance
+    function deleteTimerListItem(timer_id) {
+        console.log("deleteTimerListItem %s", timer_id)
+        //user.getTimers().pop()
+        delete timerDict[timer_id]
+        setTimerDict({...timerDict})
+        //timerlist.pop()
+        // setTimerDict(timerDict)
+    }
+
     //Make this asynchronous
     function saveTimerToBackend() {
         let uuid = uuidv4()
@@ -58,9 +49,11 @@ export default function TimerCollectionList() {
             user_id: user.getUserId(),
             description: newTimerDescription,
         }
-        //setTimers([...timers, newTimer])
-        // user.setTimers([...timers, newTimer])
-        user.getTimers().push(newTimer)
+        //user.getTimers().push(newTimer)
+        //timerlist.push(newTimer)
+        timerDict[uuid] = newTimer
+        setTimerDict({...timerDict})
+        // setTimerDict(timerDict)
 
         //Here we wait for the assigned timer_id
         Auth.addNewTimer((success,timer_id)=>{
@@ -80,16 +73,26 @@ export default function TimerCollectionList() {
         setNewTimerDescription(null)
     }
 
+    // edit, updown, delete
+    //edit is changing the description of a timer with a specific id
+    //updown is changing the order in the list - which is an array so we can just do a swap
+    //delete is removing an item from the array with a specific key/index
+    //it would seem that all of these things can be done from the timer list item
+    //each timer list item should handle its own edit, update, delete functions.
     return (
         <div>
-            <h2>Timer Collection for {user.getApiToken()}</h2>
+            <h2>for {user.getApiToken()}</h2>
             {
-                user.getTimers().map((timer)=>{
-                    return (<TimerListItem description={timer.description} user_id={timer.user_id} timer_id={timer.timer_id} key={timer.timer_id}/>)
+                Object.keys(timerDict).length &&
+                Object.entries(timerDict).map(([timer_id,timer])=>{
+                    return (
+                        <TimerListItem description={timer.description} user_id={timer.user_id} timer_id={timer.timer_id} key={timer_id} editing={editing} index={0} delete={deleteTimerListItem}/>
+                    )
                 })
-                // timers.map((timer)=>{
-                //     return (<TimerListItem description={timer.description} user_id={timer.user_id} timer_id={timer.timer_id} key={timer.timer_id}/>)
-                // })
+            }
+            {
+                !Object.keys(timerDict).length &&
+                <h3>No timers</h3>
             }
             {editing && <div><label>Description</label><input type="text" ref={descriptionRef} onChange={handleNewDescriptionChange}></input></div>}
             {editing && <button onClick={handleAddClicked}>Add</button>}

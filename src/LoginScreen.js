@@ -30,7 +30,7 @@ export default function LoginScreen(props) {
             console.log("timerListCallback")
             Auth.getTimers(user.getUserId(), (success, timerData)=> {
                 if(success && timerData.length) {
-                    let newTimers = []
+                    let newTimers = {}
                     for(let idx in timerData) {
                         let timer = timerData[idx]
                         console.log(timer)
@@ -39,7 +39,7 @@ export default function LoginScreen(props) {
                             user_id: timer.user_id,
                             description: timer.description
                         }
-                        newTimers.push(newTimer)
+                        newTimers[timer.timer_id] = newTimer
                     }
                     user.setTimers(newTimers)
                 }
@@ -78,26 +78,6 @@ export default function LoginScreen(props) {
             console.log("User is already authenticated (and logged in)")
         }
     }, [user,props.history,timerListCallback])
-
-
-    // function getUserTimers() {
-    //     Auth.getTimers(user.getUserId(), (success, timerData)=> {
-    //         if(success && timerData.length) {
-    //             let newTimers = []
-    //             for(let idx in timerData) {
-    //                 let timer = timerData[idx]
-    //                 console.log(timer)
-    //                 let newTimer = {
-    //                     timer_id: timer.timer_id,
-    //                     user_id: timer.user_id,
-    //                     description: timer.description
-    //                 }
-    //                 newTimers.push(newTimer)
-    //             }
-    //             user.setTimers(newTimers)
-    //         }
-    //     })
-    // }
 
     function loginOrRegisterCallback(result, toastMessage, toastId, email, api_token, user_id) {
         if(result) {
@@ -138,8 +118,6 @@ export default function LoginScreen(props) {
             <button label='submit' onClick={ handleLogin }>Login</button>
             <button label='submit' onClick={ handleRegister }>Register</button>
             <br/>
-            {/* <h3>users email: {user.getEmail() || 'null'}</h3>
-            <h3>users apiToken: {user.getApiToken() || 'null'}</h3> */}
         </div>
     )
 }
