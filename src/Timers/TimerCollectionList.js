@@ -39,6 +39,12 @@ export default function TimerCollectionList() {
         setTimerDict({...timerDict})
         //timerlist.pop()
         // setTimerDict(timerDict)
+        Auth.deleteTimer(timer_id, (success)=>{
+            if(success) {
+                //TODO: Add toast here
+                console.log("Successfully deleted timer with timer id %s",timer_id)
+            }
+        })
     }
 
     //Make this asynchronous
@@ -58,9 +64,10 @@ export default function TimerCollectionList() {
         //Here we wait for the assigned timer_id
         Auth.addNewTimer((success,timer_id)=>{
             if(success) {
+                //TODO: Add toast here
                 console.log("Successfully saved timer with timer_id %s",timer_id)
             }
-        },user.getUserId(),uuid,newTimerDescription)
+        },user.getUserId(),uuid,newTimerDescription,Object.keys(timerDict).length)
     }
 
     function handleClickedEdit() {
@@ -79,19 +86,32 @@ export default function TimerCollectionList() {
     //delete is removing an item from the array with a specific key/index
     //it would seem that all of these things can be done from the timer list item
     //each timer list item should handle its own edit, update, delete functions.
+
+    /* THe list items will be loaded in with a saved rank value, on initial load
+    that's the data we use to sort the users timer list.
+
+    Thereafter, we can move the items up and down, and delete those items.
+    This effectively changes their rank. At the end of an "edit" (deleting, moving up and down)
+    we can "resolveRank" by setting the rank values of each list item to their relative position
+    in the list.
+
+    Then what we do is update the database with the new rank of the list item.
+
+    Delete should be working and updating first though.
+    */
     return (
         <div>
             <h2>for {user.getApiToken()}</h2>
             {
-                Object.keys(timerDict).length &&
+                Object.keys(timerDict).length > 0 &&
                 Object.entries(timerDict).map(([timer_id,timer])=>{
                     return (
-                        <TimerListItem description={timer.description} user_id={timer.user_id} timer_id={timer.timer_id} key={timer_id} editing={editing} index={0} delete={deleteTimerListItem}/>
+                        <TimerListItem rank={timer.rank} description={timer.description} user_id={timer.user_id} timer_id={timer.timer_id} key={timer_id} editing={editing}  delete={deleteTimerListItem}/>
                     )
                 })
             }
             {
-                !Object.keys(timerDict).length &&
+                Object.keys(timerDict).length <= 0 &&
                 <h3>No timers</h3>
             }
             {editing && <div><label>Description</label><input type="text" ref={descriptionRef} onChange={handleNewDescriptionChange}></input></div>}

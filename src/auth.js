@@ -111,12 +111,13 @@ class Auth {
     //Timers
 
     //TODO: Make this take an auth_token so we can have middleware auth checking on the backend
-    addNewTimer = (callback, user_id, timer_id, description) => {
+    addNewTimer = (callback, user_id, timer_id, description, rank) => {
         const config = { headers: {'Content-Type':'application/x-www-form-urlencoded'} }
         const params = new URLSearchParams()
         params.append('user_id', user_id)
         params.append('description', description)
         params.append('timer_id', timer_id)
+        params.append('rank', rank)
         const connString = process.env.REACT_APP_DB_STRING.concat('/timers/add')
         axios.post(connString, params, config)
         .then((result)=>{
@@ -143,9 +144,25 @@ class Auth {
             }
         })
         .catch((error)=>{
-            console.log("error from server")
+            console.log("error getting timers from server")
             console.log(error)
             callback(false, null)
+        })
+    }
+
+    //TODO: This needs to be an authorized transaction
+    deleteTimer = (timer_id, callback) => {
+        const connString = process.env.REACT_APP_DB_STRING.concat('/timers/delete')
+        axios.delete(connString, {data: {timer_id:timer_id}})
+        .then((response)=>{
+            if(response.status === 200) {
+                callback(true)
+            }
+        })
+        .catch((error)=>{
+            console.log("error deleting timers from backend")
+            console.log(error)
+            callback(false)
         })
     }
 }

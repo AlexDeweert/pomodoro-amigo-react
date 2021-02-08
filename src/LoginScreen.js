@@ -11,20 +11,8 @@ export default function LoginScreen(props) {
 
     const emailRef = useRef()
     const passwordRef = useRef()
-    //const [apiToken] = useState( JSON.parse(localStorage.getItem('apiToken')) || null)
-
-    //Similar to componentDidMount and componentDidUpdate
-    // useEffect(() => {
-    //     //localStorage.setItem('apiToken', JSON.stringify(apiToken))
-    //     return () => {
-    //         //If apiToken exists, we don't need to set it.
-    //         localStorage.setItem('apiToken', JSON.stringify(apiToken))
-    //     }
-    // }, [apiToken])
-    //Here we can do something like, on App load, first verify with the server that the
-    //existing API token is valid (if there is indeed a token). If it is, proceed as normal
-    //otherwise we revoke the current API token and force the user to login.
-
+    
+    //This is where we load in the timers on user login
     let timerListCallback = useCallback(
         () => {
             console.log("timerListCallback")
@@ -37,7 +25,8 @@ export default function LoginScreen(props) {
                         let newTimer = {
                             timer_id: timer.timer_id,
                             user_id: timer.user_id,
-                            description: timer.description
+                            description: timer.description,
+                            rank: timer.rank
                         }
                         newTimers[timer.timer_id] = newTimer
                     }
