@@ -18,7 +18,7 @@ export default function LoginScreen(props) {
             console.log("timerListCallback")
             Auth.getTimers(user.getUserId(), (success, timerData)=> {
                 if(success && timerData.length) {
-                    let newTimers = {}
+                    let newTimers = []
                     for(let idx in timerData) {
                         let timer = timerData[idx]
                         console.log(timer)
@@ -28,7 +28,7 @@ export default function LoginScreen(props) {
                             description: timer.description,
                             rank: timer.rank
                         }
-                        newTimers[timer.timer_id] = newTimer
+                        newTimers.push(newTimer)
                     }
                     user.setTimers(newTimers)
                 }

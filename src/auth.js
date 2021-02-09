@@ -2,16 +2,6 @@ import axios from 'axios'
 
 class Auth {
     constructor() {
-        // var apiToken = JSON.parse(localStorage.getItem('apiToken'));
-        // if(apiToken !== null) {
-        //     console.log('apiToken is NOT null, setting authenticated to true')
-        //     this.authenticated = true
-        // }
-        // else {
-        //     console.log('apiToken IS NULL, setting this.authenticated to false')
-        //     this.authenticated = false
-        // }
-        // console.log(this.authenticated)
         this.authenticated = false
     }
 

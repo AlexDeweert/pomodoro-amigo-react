@@ -1,6 +1,6 @@
 export default class User {
 
-    constructor(email=null,api_token=null,user_id=null,user_timers={}) {
+    constructor(email=null,api_token=null,user_id=null,user_timers=[]) {
         this.email = email
         this.api_token = api_token
         this.user_id = user_id

@@ -9,14 +9,14 @@ export default function TimerCollectionList() {
     const [user] = useContext(UserContext)
     //Load the timerlist once on component load.
     //after that we edit locally, and async update the list remotely.
-    const [timerDict, setTimerDict] = useState({})
+    const [timers, setTimers] = useState([])
     let [editing, setEditing] = useState(false)
     let [newTimerDescription, setNewTimerDescription] = useState(null)
     let descriptionRef = useRef()
 
     useEffect(()=>{
         console.log("Initial user load")
-        setTimerDict(user.getTimers())
+        setTimers(user.getTimers())
     }, [user])
 
     function handleNewDescriptionChange(e) {
@@ -35,8 +35,18 @@ export default function TimerCollectionList() {
     function deleteTimerListItem(timer_id) {
         console.log("deleteTimerListItem %s", timer_id)
         //user.getTimers().pop()
-        delete timerDict[timer_id]
-        setTimerDict({...timerDict})
+        // delete timers[timer_id]
+
+        //Slightly inefficient - dicts make this faster but the tradeoff
+        //is that we can't re-order dicts (for the up/down functionality)
+        for(let i = 0; i < timers.length; i++) {
+            let timer = timers[i]
+            if(timer.timer_id === timer_id) {
+                timers.splice(i, 1)
+                break
+            }
+        }
+        setTimers([...timers])
         //timerlist.pop()
         // setTimerDict(timerDict)
         Auth.deleteTimer(timer_id, (success)=>{
@@ -47,18 +57,52 @@ export default function TimerCollectionList() {
         })
     }
 
+    function promoteTimer(index) {
+        /* We want to adjust the ranks of the existing timer list
+        We don't resolve the rank in the database until after the user clicks "done".
+
+        For now, we want to see if we can update the existing ranks of the timer dict
+        make sure that the values are displayed properly (in sorted order)
+
+        We loaded the timers ONCE into the user object after login.
+        We can forget about that list for now and just use whatever is inside this components state (timerDict).
+        Lets see if we can update the ordering of a dict: NOPE can't do it, at least easily.
+        What if we maintain both a dict AND an array. The dict for quick referencing and deleting.
+        */
+       console.log("swap up with %s",index)
+       if(index > 0) {
+           let temp = timers[index-1]
+           timers[index-1] = timers[index]
+           timers[index] = temp
+       }
+       setTimers([...timers])
+    }
+
+    function demoteTimer(index) {
+        console.log("swap down with %s",index)
+       if(index < timers.length-1) {
+           let temp = timers[index+1]
+           timers[index+1] = timers[index]
+           timers[index] = temp
+       }
+       setTimers([...timers])
+    }
+
     //Make this asynchronous
+    //TODO: The timers shouldn't be saved until the user clicks DONE
+    //then we can call some kind of "resolve" function to update ranks, items, etc.
     function saveTimerToBackend() {
         let uuid = uuidv4()
         let newTimer = {
             timer_id: uuid,
             user_id: user.getUserId(),
             description: newTimerDescription,
+            rank: timers.length
         }
         //user.getTimers().push(newTimer)
-        //timerlist.push(newTimer)
-        timerDict[uuid] = newTimer
-        setTimerDict({...timerDict})
+        timers.push(newTimer)
+        // timerDict[uuid] = newTimer
+        // setTimerDict({...timerDict})
         // setTimerDict(timerDict)
 
         //Here we wait for the assigned timer_id
@@ -67,7 +111,7 @@ export default function TimerCollectionList() {
                 //TODO: Add toast here
                 console.log("Successfully saved timer with timer_id %s",timer_id)
             }
-        },user.getUserId(),uuid,newTimerDescription,Object.keys(timerDict).length)
+        },user.getUserId(),uuid,newTimerDescription,timers.length)
     }
 
     function handleClickedEdit() {
@@ -103,15 +147,15 @@ export default function TimerCollectionList() {
         <div>
             <h2>for {user.getApiToken()}</h2>
             {
-                Object.keys(timerDict).length > 0 &&
-                Object.entries(timerDict).map(([timer_id,timer])=>{
+                timers.length > 0 &&
+                timers.map((timer, idx)=>{
                     return (
-                        <TimerListItem rank={timer.rank} description={timer.description} user_id={timer.user_id} timer_id={timer.timer_id} key={timer_id} editing={editing}  delete={deleteTimerListItem}/>
+                        <TimerListItem rank={timer.rank} description={timer.description} user_id={timer.user_id} timer_id={timer.timer_id} key={timer.timer_id} index={idx} editing={editing} delete={deleteTimerListItem} promote={promoteTimer} demote={demoteTimer}/>
                     )
                 })
             }
             {
-                Object.keys(timerDict).length <= 0 &&
+                timers.length <= 0 &&
                 <h3>No timers</h3>
             }
             {editing && <div><label>Description</label><input type="text" ref={descriptionRef} onChange={handleNewDescriptionChange}></input></div>}

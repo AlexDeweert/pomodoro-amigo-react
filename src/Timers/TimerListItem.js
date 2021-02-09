@@ -19,6 +19,8 @@ export default function TimerListItem(props) {
         <div>
             rank: {props.rank}, esc: {props.description}, user_id: {props.user_id}, timer_id: {props.timer_id || "null timer id"}
             {props.editing && <button onClick={()=> {props.delete(props.timer_id)}}>D</button>}
+            {props.editing && <button onClick={()=> {props.promote(props.index)}}>Up</button>}
+            {props.editing && <button onClick={()=> {props.demote(props.index)}}>Dwn</button>}
             {/* {props.editing && <button>E</button>}
             {props.editing && <button onClick={handleUpArrowPressed}>Up</button>}
             {props.editing && <button>Dn</button>}
