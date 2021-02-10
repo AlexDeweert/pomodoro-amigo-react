@@ -114,14 +114,38 @@ export default function TimerCollectionList() {
         },user.getUserId(),uuid,newTimerDescription,timers.length)
     }
 
+    //TODO: This function call should be added to a background queue of pending jobs
+    //that is executed whenever a user saves their changes to an existing list.
+    //We update their orders, and contents. The orders will depend on the state of the final list
+    //state.
+    
+    //TODO: Timer ranks should only be updated if they change. We could have a "last" and "current" rank list
+    //and just compare their values to see if they need to actually be updated.
+    //It would need to be like {'timer_id':<id>, 'rank':<rank>} then we could do a shallow comparison
+    //If we do saveTimerRanks, we set "last" to the updated list.
+    //We only complete the update if "last" != "current"
+    function saveTimerRanksToBackend() {
+        //We need to send a rank, and a timer_id in the form { "<somerank>": {"timer_id": "<sometimerid>"} }
+        //We also
+        let timerData = {}
+        for(let i = 0; i < timers.length; i++) {
+            timerData[i.toString()] = {'timer_id':timers[i].timer_id}
+        }
+        Auth.updateTimerRanks(timerData, (success)=>{
+            if(success) console.log('successfully updated timer ranks')
+            else console.log('error updating timer ranks')
+        })
+    }
+
     function handleClickedEdit() {
         setEditing(true)
     }
     
-    function handleClickedDone() {
+    function handleClickedSave() {
         setEditing(false)
         descriptionRef.current.value = null
         setNewTimerDescription(null)
+        saveTimerRanksToBackend()
     }
 
     // edit, updown, delete
@@ -160,7 +184,7 @@ export default function TimerCollectionList() {
             }
             {editing && <div><label>Description</label><input type="text" ref={descriptionRef} onChange={handleNewDescriptionChange}></input></div>}
             {editing && <button onClick={handleAddClicked}>Add</button>}
-            {editing && <button onClick={handleClickedDone}>Done</button>}
+            {editing && <button onClick={handleClickedSave}>Done</button>}
             {!editing && <button onClick={handleClickedEdit}>Edit</button>}
         </div>
     )

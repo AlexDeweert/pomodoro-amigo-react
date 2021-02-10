@@ -155,6 +155,19 @@ class Auth {
             callback(false)
         })
     }
+
+    updateTimerRanks = (timerData, callback) => {
+        const connString = process.env.REACT_APP_DB_STRING.concat('/timers/update-ranks')
+        axios.put(connString, timerData)
+        .then((response)=>{
+            if(response.status === 200) {
+                callback(true)
+            }
+        })
+        .catch(()=>{
+            callback(false)
+        })
+    }
 }
 
 export default new Auth();
